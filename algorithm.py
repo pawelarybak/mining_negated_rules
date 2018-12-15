@@ -1,24 +1,51 @@
+from dataset import ItemSet
 
 
 def frequent_1_itemsets(dataset, min_support):
-    counter = dict.fromkeys(dataset.items, 0)
-    for itemset in dataset.data:
+    tid_lists = dict.fromkeys(dataset.items, set())
+    for idx, itemset in enumerate(dataset.data):
         for item in dataset.items:
-            counter[item] += 1 if item in itemset else 0
-    # Using dict as OrderedSet. See: https://stackoverflow.com/a/39835527
-    return [{item} for item, val in counter.items() if val/len(dataset.data) > min_support]
+            if item in itemset:
+                tid_lists[item].add(idx)
+    return [
+        ItemSet(item, tid_list) for item, tid_list in tid_lists.items()
+        if len(tid_list)/len(dataset.data) > min_support
+    ]
 
 
-def generate_frequent_candidates(Fk, F1):
-    new_set = list()
-    for k_itemset in Fk:
-        for one_itemset in F1:
+def generate_frequent_candidates(fk, f1):
+    candidates = list()
+    for k_itemset in fk:
+        for one_itemset in f1:
             if not one_itemset.issubset(k_itemset):
-                new_set.append(k_itemset | one_itemset)
-    return new_set
+                candidates.append(ItemSet.merge(k_itemset, one_itemset))
+    return candidates
 
 
-def method(dataset, min_support=0.5):
+def correlation(set_one, set_two):
+    # TODO
+    pass
+
+
+def confidence(rule):
+    # TODO
+    pass
+
+
+def mine_rules(dataset, min_support, min_confidence, min_corr=0.5):
     positiveAR = set()
     negativeAR = set()
-    F1 = frequent_1_itemsets(dataset, min_support)
+    f1 = frequent_1_itemsets(dataset, min_support)
+    fk_1 = f1
+    k = 2
+    while True:
+        ck = generate_frequent_candidates(fk_1, f1)
+        fk = list()
+        for itemset in ck:
+            if itemset.support > min_support:
+                fk.append(itemset)
+            for x, y in itemset.split_combinations():
+                corr = correlation(x, y)
+                if corr > min_corr and itemset.support > min_support and confidence():
+                    pass  # TODO
+
