@@ -1,4 +1,4 @@
-from dataset import ItemSet
+from dataset import ItemSet, Rule
 
 
 def frequent_1_itemsets(dataset, min_support):
@@ -46,6 +46,11 @@ def mine_rules(dataset, min_support, min_confidence, min_corr=0.5):
                 fk.append(itemset)
             for x, y in itemset.split_combinations():
                 corr = correlation(x, y)
-                if corr > min_corr and itemset.support > min_support and confidence():
-                    pass  # TODO
+                if corr > min_corr :
+                    if itemset.support > min_support:
+                        orig_rule = Rule(x, y)
+                        if confidence(orig_rule) >= min_confidence:
+                            positiveAR.add(orig_rule)
+                    elif confidence(Rule(x, y).inverted()) > min_confidence
+                        and :
 

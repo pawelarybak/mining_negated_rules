@@ -15,19 +15,27 @@ class DataSet(object):
         :param file_path: path to file
         :return: DataSet object
         """
-        data = list()
         with open(file_path, 'r') as csv_file:
             reader = csv.reader(csv_file, delimiter=',', quotechar="\"")
             headers = next(reader)
+            data = {header: list() for header in headers}
             for line in reader:
-                data.append({name for name, boolean in zip(headers, line[1:]) if int(boolean)})
+                tid = line[0]
+                for name, boolean in zip(headers, line[1:]):
+                    if int(boolean):
+                        data[name].append(int(tid))
+                # data.append({name for name, boolean in zip(headers, line[1:]) if int(boolean)})
         return cls(headers, data)
 
 
 class ItemSet(object):
     def __init__(self, data, tid_list=None):
+        """
+        :param data: Collection of items from dataset in any form
+        :param tid_list: Collection of ints, that represent ids of transactions to which itemset belongs
+        """
         self.data = set(data)
-        self.tid_list = set(tid_list)
+        self.tid_list = set(tid_list if tid_list is not None else [])
 
     @property
     def support(self):
@@ -47,7 +55,34 @@ class ItemSet(object):
 
 
 class Rule(object):
-    def __init__(self, antecedent, consequent):
-        # TODO mark negated (somehow)
-        self.antecedent = antecedent
-        self.consequent = consequent
+    def __init__(self, antecedents, consequents):
+        """
+        :param antecedents: Set of tuples for lhs of rule. Each tuple contains (item, is_positive), where is_positive
+        means if item is not negated. If element is not tuple, is_positive == True is assumed
+        :param consequents: Set of tuples for rhs of rule. Each tuple contains (item, is_positive), where is_positive
+        means if item is not negatedIf element is not tuple, is_positive == True is assumed
+        """
+        self.antecedents = {
+            antecedent if isinstance(antecedent, tuple) else (antecedent, True) for antecedent in antecedents
+        }
+        self.consequents = {
+            consequent if isinstance(consequent, tuple) else (consequent, True) for consequent in consequents
+        }
+
+    def inverted(self):
+        return Rule(
+            {(antecedent, not is_positive) for antecedent, is_positive in self.antecedents},
+            {(consequent, not is_positive) for consequent, is_positive in self.consequents},
+        )
+
+    def inverted_antecedents(self):
+        return Rule(
+            {(antecedent, not is_positive) for antecedent, is_positive in self.antecedents},
+            set(self.consequents),
+        )
+
+    def inverted_consequents(self):
+        return Rule(
+            set(self.antecedents),
+            {(consequent, not is_positive) for consequent, is_positive in self.consequents},
+        )
