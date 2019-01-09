@@ -1,12 +1,28 @@
 import csv
+import operator
+from functools import reduce
 
 from itertools import combinations
 
+################################################
+# IMPORTANT - This project assumes that item
+# with all uppercase name is negated and all
+# lowercase is positive
+################################################
+
 
 class DataSet(object):
-    def __init__(self, items, data):
+    def __init__(self, items, data, size):
         self.items = items
         self.data = data
+        self.size = size
+        self.all_tids = set(range(1, size + 1))
+
+    def __getitem__(self, item):
+        if item.islower():
+            return self.data[item]
+        else:
+            return self.all_tids - self.data[item.lower()]
 
     @classmethod
     def from_bin_csv(cls, file_path):
@@ -17,72 +33,122 @@ class DataSet(object):
         """
         with open(file_path, 'r') as csv_file:
             reader = csv.reader(csv_file, delimiter=',', quotechar="\"")
-            headers = next(reader)
-            data = {header: list() for header in headers}
+            next(reader)
+            length = sum(1 for _ in reader)
+
+            csv_file.seek(0)
+            reader = csv.reader(csv_file, delimiter=',', quotechar="\"")
+            headers = (name.lower() for name in next(reader))
+            data = {header: set() for header in headers}
             for line in reader:
                 tid = line[0]
                 for name, boolean in zip(headers, line[1:]):
                     if int(boolean):
-                        data[name].append(int(tid))
-                # data.append({name for name, boolean in zip(headers, line[1:]) if int(boolean)})
-        return cls(headers, data)
+                        data[name].add(int(tid))
+        return cls(headers, data, length)
 
 
 class ItemSet(object):
-    def __init__(self, data, tid_list=None):
+    def __init__(self, items, dataset):
         """
         :param data: Collection of items from dataset in any form
         :param tid_list: Collection of ints, that represent ids of transactions to which itemset belongs
         """
-        self.data = set(data)
-        self.tid_list = set(tid_list if tid_list is not None else [])
+        self.items = frozenset(items)
+        self.dataset = dataset
+
+    def __str__(self):
+        return str(self.items)
+
+    def __iter__(self):
+        return iter(self.items)
+
+    def __cmp__(self, other):
+        return self.items.__cmp__(other.items)
+
+    def __eq__(self, other):
+        return self.items == other.items
+
+    def __hash__(self):
+        return hash(self.items)
+
+    def issubset(self, other):
+        return self.items.issubset(other.items)
+
+    @property
+    def tid_list(self):
+        return reduce(
+            operator.and_,
+            [self.dataset[item] for item in self.items],
+        )
 
     @property
     def support(self):
         return len(self.tid_list)
 
+    @property
+    def probability(self):
+        return self.support / self.dataset.size
+
     def split_combinations(self):
-        for l in range(len(self.data)):
-            for combination in combinations(self.data, l):
-                yield (set(combination), set(self.data - set(combination)))
+        for l in range(1, len(self.items)):
+            for combination in combinations(self.items, l):
+                yield (
+                    ItemSet(combination, self.dataset),
+                    ItemSet(self.items - set(combination), self.dataset),
+                )
+
+    def negated(self):
+        return ItemSet(
+            (item.upper() if item.islower() else item.lower() for item in self.items),
+            self.dataset,
+        )
 
     @classmethod
     def merge(cls, item_set1, item_set2):
-            return cls(
-                item_set1.data | item_set2.data,
-                item_set1.tid_list & item_set2.tid_list,
-            )
+        assert item_set1.dataset is item_set2.dataset
+        return cls(
+            item_set1.items | item_set2.items,
+            item_set1.dataset,
+        )
 
 
 class Rule(object):
     def __init__(self, antecedents, consequents):
-        """
-        :param antecedents: Set of tuples for lhs of rule. Each tuple contains (item, is_positive), where is_positive
-        means if item is not negated. If element is not tuple, is_positive == True is assumed
-        :param consequents: Set of tuples for rhs of rule. Each tuple contains (item, is_positive), where is_positive
-        means if item is not negatedIf element is not tuple, is_positive == True is assumed
-        """
-        self.antecedents = {
-            antecedent if isinstance(antecedent, tuple) else (antecedent, True) for antecedent in antecedents
-        }
-        self.consequents = {
-            consequent if isinstance(consequent, tuple) else (consequent, True) for consequent in consequents
-        }
+        self.antecedents = antecedents
+        self.consequents = consequents
 
     def inverted(self):
         return Rule(
-            {(antecedent, not is_positive) for antecedent, is_positive in self.antecedents},
-            {(consequent, not is_positive) for consequent, is_positive in self.consequents},
+            self.antecedents.negated(),
+            self.consequents.negated(),
         )
 
     def inverted_antecedents(self):
         return Rule(
-            {(antecedent, not is_positive) for antecedent, is_positive in self.antecedents},
-            set(self.consequents),
+            ItemSet(
+                (item.upper() if item.islower() else item.lower() for item in self.antecedents),
+                self.antecedents.dataset,
+            ),
+            self.consequents,
         )
 
     def inverted_consequents(self):
         return Rule(
-            set(self.antecedents),
-            {(consequent, not is_positive) for consequent, is_positive in self.consequents},
+            self.antecedents,
+            ItemSet(
+                (item.upper() if item.islower() else item.lower() for item in self.consequents),
+                self.consequents.dataset,
+            ),
         )
+
+    @property
+    def support(self):
+        return self.antecedents.support
+
+    @property
+    def confidence(self):
+        try:
+            return ItemSet.merge(self.antecedents, self.consequents).support / self.antecedents.support
+        except ZeroDivisionError:
+            return 0
