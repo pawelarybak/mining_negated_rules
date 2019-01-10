@@ -38,7 +38,7 @@ class DataSet(object):
 
             csv_file.seek(0)
             reader = csv.reader(csv_file, delimiter=',', quotechar="\"")
-            headers = (name.lower() for name in next(reader))
+            headers = tuple(name.lower() for name in next(reader))
             data = {header: set() for header in headers}
             for line in reader:
                 tid = line[0]
@@ -117,6 +117,14 @@ class Rule(object):
     def __init__(self, antecedents, consequents):
         self.antecedents = antecedents
         self.consequents = consequents
+
+    def __str__(self):
+        return '{} -> {} (support: {}, confidence: {})'.format(
+            self.antecedents,
+            self.consequents,
+            self.support,
+            self.confidence,
+        )
 
     def inverted(self):
         return Rule(
