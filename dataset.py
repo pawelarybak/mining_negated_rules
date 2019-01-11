@@ -90,6 +90,9 @@ class ItemSet(object):
     def probability(self):
         return self.support / self.dataset.size
 
+    # alias for relative support
+    rsupport = probability
+
     def split_combinations(self):
         for l in range(1, len(self.items)):
             for combination in combinations(self.items, l):

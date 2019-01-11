@@ -36,6 +36,20 @@ def get_argparser():
         help='Minimal correlation coefficient',
         required=False,
     )
+    parser.add_argument(
+        '--length', '-l',
+        dest='max_len',
+        type=int,
+        default=None,
+        help='Minimal correlation coefficient',
+        required=False,
+    )
+    parser.add_argument(
+        '--verbose', '-v',
+        dest='verbose',
+        action='store_true',
+        help='Print to output some info during algorithm work'
+    )
     return parser
 
 
@@ -49,6 +63,8 @@ if __name__ == '__main__':
         min_support=args.min_supp,
         min_confidence=args.min_conf,
         min_corr=args.min_corr,
+        max_len=args.max_len,
+        verbose=args.verbose,
     )
 
     for rule in rules:

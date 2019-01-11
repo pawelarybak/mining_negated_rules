@@ -32,17 +32,19 @@ def correlation(itemset1, itemset2):
         return 1
 
 
-def mine_rules(dataset, min_support, min_confidence, min_corr=0.5):
+def mine_rules(dataset, min_support, min_confidence, min_corr=0.5, max_len=None, verbose=False):
     positiveAR = set()
     negativeAR = set()
     f1 = frequent_1_itemsets(dataset, min_support)
     fk_1 = f1  # F_(k-1)
     k = 2
-    while len(fk_1) != 0:
+    while len(fk_1) != 0 and (max_len is None or k > max_len):
         ck = generate_frequent_candidates(fk_1, f1)
         fk = list()
+        if verbose:
+            print('Finding rules of length: {} ({} frequent candidates)'.format(k, len(ck)))
         for itemset in ck:
-            supp = itemset.support
+            supp = itemset.rsupport
             if supp > min_support:
                 fk.append(itemset)
             for x, y in itemset.split_combinations():
@@ -55,7 +57,7 @@ def mine_rules(dataset, min_support, min_confidence, min_corr=0.5):
                     else:
                         x_neg = x.negated()
                         y_neg = y.negated()
-                        if ItemSet.merge(x_neg, y_neg).support > min_support:
+                        if ItemSet.merge(x_neg, y_neg).rsupport > min_support:
                             neg_rule = Rule(x_neg, y_neg)
                             if neg_rule.confidence > min_confidence:
                                 negativeAR.add(neg_rule)
@@ -68,6 +70,12 @@ def mine_rules(dataset, min_support, min_confidence, min_corr=0.5):
                         negativeAR.add(neg_adj)
                     if neg_cons.confidence > min_confidence:
                         negativeAR.add(neg_cons)
+        if verbose:
+            print('Frequent itemsets of length {}: {}'.format(k, len(fk)))
         fk_1 = list(fk)
-    return negativeAR | positiveAR
+        k += 1
+    found_rules = negativeAR | positiveAR
+    if verbose:
+        print('Found: {} rules'.format(len(found_rules)))
+    return found_rules
 
