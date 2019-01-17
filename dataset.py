@@ -49,7 +49,7 @@ class DataSet(object):
 
 
 class ItemSet(object):
-
+    __slots__ = ('items', 'dataset')
 
     def __init__(self, items, dataset):
         """
@@ -118,6 +118,8 @@ class ItemSet(object):
 
 
 class Rule(object):
+    __slots__ = ('antecedents', 'consequents')
+
     def __init__(self, antecedents, consequents):
         self.antecedents = antecedents
         self.consequents = consequents
