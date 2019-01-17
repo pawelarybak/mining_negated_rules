@@ -19,10 +19,10 @@ class DataSet(object):
         self.all_tids = set(range(1, size + 1))
 
     def __getitem__(self, item):
-        if item.islower():
-            return self.data[item]
+        if item.startswith('~'):
+            return self.all_tids - self.data[item[1:]]
         else:
-            return self.all_tids - self.data[item.lower()]
+            return self.data[item]
 
     @classmethod
     def from_bin_csv(cls, file_path):
@@ -38,7 +38,7 @@ class DataSet(object):
 
             csv_file.seek(0)
             reader = csv.reader(csv_file, delimiter=',', quotechar="\"")
-            headers = tuple(name.lower() for name in next(reader))
+            headers = next(reader)
             data = {header: set() for header in headers}
             for line in reader:
                 tid = line[0]
@@ -103,7 +103,7 @@ class ItemSet(object):
 
     def negated(self):
         return ItemSet(
-            (item.upper() if item.islower() else item.lower() for item in self.items),
+            (item.strip('~') if item.startswith('~') else '~{}'.format(item) for item in self.items),
             self.dataset,
         )
 
@@ -137,20 +137,14 @@ class Rule(object):
 
     def inverted_antecedents(self):
         return Rule(
-            ItemSet(
-                (item.upper() if item.islower() else item.lower() for item in self.antecedents),
-                self.antecedents.dataset,
-            ),
+            self.antecedents.negated(),
             self.consequents,
         )
 
     def inverted_consequents(self):
         return Rule(
             self.antecedents,
-            ItemSet(
-                (item.upper() if item.islower() else item.lower() for item in self.consequents),
-                self.consequents.dataset,
-            ),
+            self.consequents.negated(),
         )
 
     @property
