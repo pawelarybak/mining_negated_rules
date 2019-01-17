@@ -49,6 +49,8 @@ class DataSet(object):
 
 
 class ItemSet(object):
+
+
     def __init__(self, items, dataset):
         """
         :param data: Collection of items from dataset in any form
@@ -71,6 +73,13 @@ class ItemSet(object):
 
     def __hash__(self):
         return hash(self.items)
+
+    def __or__(self, other):
+        assert self.dataset is other.dataset
+        return ItemSet(
+            self.items | other.items,
+            self.dataset,
+        )
 
     def issubset(self, other):
         return self.items.issubset(other.items)
@@ -105,14 +114,6 @@ class ItemSet(object):
         return ItemSet(
             (item.strip('~') if item.startswith('~') else '~{}'.format(item) for item in self.items),
             self.dataset,
-        )
-
-    @classmethod
-    def merge(cls, item_set1, item_set2):
-        assert item_set1.dataset is item_set2.dataset
-        return cls(
-            item_set1.items | item_set2.items,
-            item_set1.dataset,
         )
 
 
@@ -154,6 +155,6 @@ class Rule(object):
     @property
     def confidence(self):
         try:
-            return ItemSet.merge(self.antecedents, self.consequents).support / self.antecedents.support
+            return (self.antecedents | self.consequents).support / self.antecedents.support
         except ZeroDivisionError:
             return 0

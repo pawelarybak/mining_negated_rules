@@ -15,15 +15,14 @@ def generate_frequent_candidates(fk, f1):
     for k_itemset in fk:
         for one_itemset in f1:
             if not one_itemset.issubset(k_itemset):
-                itemset = ItemSet.merge(k_itemset, one_itemset)
-                candidates.add(itemset)
+                candidates.add(k_itemset | one_itemset)
     return candidates
 
 
 def correlation(itemset1, itemset2):
     p1 = itemset1.probability
     p2 = itemset2.probability
-    cov = ItemSet.merge(itemset1, itemset2).probability - (p1 * p2)
+    cov = (itemset1 | itemset2).probability - (p1 * p2)
     sig1 = sqrt(p1 - p1 ** 2)
     sig2 = sqrt(p2 - p2 ** 2)
     try:
@@ -57,7 +56,7 @@ def mine_rules(dataset, min_support, min_confidence, min_corr=0.5, max_len=None,
                     else:
                         x_neg = x.negated()
                         y_neg = y.negated()
-                        if ItemSet.merge(x_neg, y_neg).rsupport > min_support:
+                        if (x_neg | y_neg).rsupport > min_support:
                             neg_rule = Rule(x_neg, y_neg)
                             if neg_rule.confidence > min_confidence:
                                 negativeAR.add(neg_rule)
