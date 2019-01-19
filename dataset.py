@@ -4,12 +4,6 @@ from functools import reduce
 
 from itertools import combinations
 
-################################################
-# IMPORTANT - This project assumes that item
-# with all uppercase name is negated and all
-# lowercase is positive
-################################################
-
 
 class DataSet(object):
     def __init__(self, items, data, size):
@@ -23,6 +17,25 @@ class DataSet(object):
             return self.all_tids - self.data[item[1:]]
         else:
             return self.data[item]
+
+    @classmethod
+    def from_csv(cls, file_path):
+        with open(file_path, 'r') as csv_file:
+            reader = csv.reader(csv_file, delimiter=',', quotechar="\"")
+            next(reader)
+            length = sum(1 for _ in reader)
+
+            csv_file.seek(0)
+            reader = csv.reader(csv_file, delimiter=',', quotechar='\"')
+            headers = next(reader)
+            data = dict()
+            for tid, transaction in enumerate(reader):
+                for header, element in zip(headers, transaction):
+                    key = '{}={}'.format(header, element)
+                    if key not in data:
+                        data[key] = set()
+                    data[key].add(tid)
+        return cls(headers, data, length)
 
     @classmethod
     def from_bin_csv(cls, file_path):
@@ -52,10 +65,6 @@ class ItemSet(object):
     __slots__ = ('items', 'dataset')
 
     def __init__(self, items, dataset):
-        """
-        :param data: Collection of items from dataset in any form
-        :param tid_list: Collection of ints, that represent ids of transactions to which itemset belongs
-        """
         self.items = frozenset(items)
         self.dataset = dataset
 
