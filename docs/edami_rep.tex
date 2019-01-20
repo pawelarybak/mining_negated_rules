@@ -1,0 +1,95 @@
+% !TeX encoding = UTF-8
+% !TeX spellcheck = en_EN
+\documentclass{article}
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{geometry}
+\usepackage{multirow}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{hyperref}
+
+
+\usepackage{pdfpages}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{black},
+	keywordstyle=\color{blue},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	%numbers=left,                    
+	%numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2
+}
+
+\lstset{style=mystyle}
+\date{}
+
+\author{Paweł Rybal and Karolina Borkowska}
+
+\title{Negative rule mining\\
+	{\large EDAMI project}}
+
+ 
+ \begin{document}
+ 	\maketitle
+ 	\section{Aim of the project}
+ 	The aim of this project was to implement and test a~negative rule mining algorithm that was designed and described in the article titled ,,Mining Positive and Negative Association Rules: An Approach for confirmed Rules'' by Maria-Luiza Antonie and Osmar R. Za\"{\i}ane.
+ 	
+ 	\section{Projects assumptions}
+ 	It was established that the project will be done using Python programming language and tested with various data sets and if possible, those that were used by algorithms original creators.
+ 	
+ 	\section{Implemented algorithm}
+	At the beginning data is read form a~file and then prepared so that each line in file is considered as one transaction. Also the first line is a~header that describes what each element in line represents.
+	
+	When dataset is ready proper algorithm starts. Its consecutive steps are following:
+	\begin{enumerate}
+		\item set $k$ as 1, this is the iteration number;
+		\item find all frequent item sets of size 1 and save them in the set $f_{1}$;
+		\item initialize set $f_{k-1}$ with items form $f_{1}$;
+		\item set $f_{k}$ as empty set;
+		\item generate frequent candidates list $ck$ form the $f_{k-1}$ and $f_{1}$ items:
+		\begin{itemize}
+			\item for each item set in $f_{k-1}$, for each item in $f_{1}$, check whether item is part of item set; if it is not, union of item set and this item become a~new candidate;
+		\end{itemize}
+		\item for each $ck$'s item set:
+		\begin{itemize}
+			\item check whether its relative support is above a~given threshold (i.e. is a~frequent item set), if it is so add it to $f_{k}$;
+			\item for each split combination of this item set (combinations of subsets of each possible length against rest of the items, subset becomes an antecedent, rest is consequent), check the correlation of the antecedent and consequent:
+			\begin{itemize}
+				\item it if is above a~given threshold check arisen rules confidence, again if it's above threshold assign it to positive rules set;
+				\item if it is above minimum correlation, but the support is too low, negate the antecedent and the consequent, again the new rule is checked for support and confidence, to establish whether it should be added to the set of negative rules;
+				\item if it is not, but the correlation is below negative minimal correlation two new rules are made: one with negated antecedent and one with negated consequent; both rules have their confidences check and if they are high enough, tehy are added to negative rules set.
+			\end{itemize}			
+		\end{itemize}
+		\item change $f_{k-1}$ to have $f_{k}$'s values;
+		\item if $f_{k}$ is not empty, or algorithm reached maximum length of rules, go back to point 4.
+	\end{enumerate}
+	
+	
+ 	
+\end{document}
+
+
+
+
+
+
