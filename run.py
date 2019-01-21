@@ -57,7 +57,7 @@ if __name__ == '__main__':
     parser = get_argparser()
     args = parser.parse_args()
 
-    ds = DataSet.from_bin_csv(args.file_path)
+    ds = DataSet.from_csv(args.file_path)
     rules = mine_rules(
         dataset=ds,
         min_support=args.min_supp,
