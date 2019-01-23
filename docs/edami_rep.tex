@@ -89,6 +89,7 @@
 	To run the implemented algorithm \texttt{run.py} script has to be called from \textit{sh} terminal with specified parameters. Those parameters are as follows:
 	\begin{table}[H]
 		\centering
+		\caption{Parameters of \texttt{run.py} script}
 		\begin{tabular}{r|c c c c}
 		name&description&parameter&type&obligatory\\
 		\hline
@@ -104,7 +105,6 @@
 		\hline
 		verbose&\makecell{Print to output some info\\ during algorithm work}&--verbose, -v& none &no\\
 		\end{tabular}
-	\caption{Parameters of \texttt{run.py} script}
 	\end{table}
 	
 	
@@ -113,30 +113,31 @@
 	Unfortunately due to uncertainty of what type of preprocessing was done on the dataset used in the original research by Maria-Luiza Antonie and Osmar R. Za\"{\i}ane, it was impossible to compare results of this implementation with those given in the article. Six other data sets were used to test the algorithm: 
 	\newpage
 		
-		\begin{longtable}{ p{.15\textwidth} | p{.30\textwidth}| p{.15\textwidth}| p{.30\textwidth} }
-			\centering
-			\label{res_enh}
-			dataset & description & size & classes\\
-			\hline
-			\hline
-			adults&data extracted from the census bureau database & 32561 entries& \makecell{age\\workclass\\ education\\ marital-status\\ occupation\\ relationship\\ race\\ sex\\ capital-gain\\ capital-loss\\ hours-per-week\\ native-country}\\
-			\hline
-			contraception&subset of the 1987 National Indonesia Contraceptive Prevalence Survey & 1473 entries&\makecell{Wifes-age\\Wifes-education\\Husbands-education\\Number-of-children-ever-born\\Wifes-religion\\Wifes-now-working?\\Husbands-occupation\\Standard-of-living-index\\Media-exposure\\Contraceptive-method-used}\\
-			\hline
-			mushrooms& mushroom records drawn from The Audubon Society Field Guide to North American Mushrooms (1981) & 8124 entries&\makecell{decision\\cap-shape\\cap-surface\\cap-color\\bruises\\odor\\gill-attachment\\gill-spacing\\gill-size\\gill-color\\stalk-shape\\stalk-root\\stalk-surface-above-ring\\stalk-surface-below-ring\\stalk-color-above-ring\\stalk-color-below-ring\\veil-type\\veil-color\\ring-number\\ring-type\\spore-print-color\\population\\habitat}\\
-			\hline
-			nursery& derived from a hierarchical decision model originally developed to rank applications for nursery schools & 12960 entries&\makecell{parents\\has\_nurs\\form\\children\\housing\\finance\\social\\health}\\
-			\hline
-			supermarket& sets of transactions form a~supermarket & 4627 entries&124 classes\\
-			\hline
-			titanic& Titanic's passengers' data  & 887 entries&\makecell{survived\\pclass\\name\\sex\\age\\siblings/spouses aboard\\parents/children aboard\\fare}\\
-			\hline
-			\caption{Datasets description}
-		\end{longtable} 
+	\begin{longtable}{ p{.15\textwidth} | p{.30\textwidth}| p{.15\textwidth}| p{.30\textwidth} }
+		\centering
+		dataset & description & size & classes\\
+		\hline
+		\hline
+		adults&data extracted from the census bureau database & 32561 entries& \makecell{age\\workclass\\ education\\ marital-status\\ occupation\\ relationship\\ race\\ sex\\ capital-gain\\ capital-loss\\ hours-per-week\\ native-country}\\
+		\hline
+		contraception&subset of the 1987 National Indonesia Contraceptive Prevalence Survey & 1473 entries&\makecell{Wifes-age\\Wifes-education\\Husbands-education\\Number-of-children-ever-born\\Wifes-religion\\Wifes-now-working?\\Husbands-occupation\\Standard-of-living-index\\Media-exposure\\Contraceptive-method-used}\\
+		\hline
+		mushrooms& mushroom records drawn from The Audubon Society Field Guide to North American Mushrooms (1981) & 8124 entries&\makecell{decision\\cap-shape\\cap-surface\\cap-color\\bruises\\odor\\gill-attachment\\gill-spacing\\gill-size\\gill-color\\stalk-shape\\stalk-root\\stalk-surface-above-ring\\stalk-surface-below-ring\\stalk-color-above-ring\\stalk-color-below-ring\\veil-type\\veil-color\\ring-number\\ring-type\\spore-print-color\\population\\habitat}\\
+		\hline
+		nursery& derived from a hierarchical decision model originally developed to rank applications for nursery schools & 12960 entries&\makecell{parents\\has\_nurs\\form\\children\\housing\\finance\\social\\health}\\
+		\hline
+		supermarket& sets of transactions form a~supermarket & 4627 entries&124 classes\\
+		\hline
+		titanic& Titanic's passengers' data  & 887 entries&\makecell{survived\\pclass\\name\\sex\\age\\siblings/spouses aboard\\parents/children aboard\\fare}\\
+		\hline
+		\caption{Datasets description}
+	\end{longtable} 
+	\label{res_enh}
 	\subsection{Time tests}
 	To check whether it is possible to conduct research using presented algorithm and to check its time consumption, for each dataset script was run ten times with support, confidence and correlation coefficient equal to 0.5. This numbers were chosen due to fact that some datasets take too long with smaller numbers, but this configuration at least provides some rules and iterates over all of datasets. For this experiment it is enough, in the next section all datasets will be tested with specialized settings. Results are shown below (datasets are shown form the smallest to the largest):
 	\begin{table}[H]
 		\centering
+		\caption{Average times of conducting an experiment on a given dataset}
 		\begin{tabular}{r||c |c |c }
 			Dataset&average time&rules found&longest rule\\
 			\hline
@@ -153,7 +154,6 @@
 			\hline
 			adult&3.0311s&0&0\\
 		\end{tabular}
-		\caption{Average times of conducting an experiment on a given dataset}
 	\end{table}
 	As it was suspected, larger data sets take longer time to compute. This was concluded considering that some datasets do not produce rules, hence time taken to iterate over \textit{adult} dataset takes longer then \textit{contraception} or \textit{supermarket} proves this, as much as time taken for \textit{mushrooms} and \textit{titanic}, that produce some rules. Further sections will consider individual datasets' tests.
 	
@@ -163,6 +163,7 @@
 	
 	\begin{table}[H]
 		\centering
+		\caption{Settings used for testing on \textit{adult} dataset}
 		\label{as}
 		\begin{tabular}{c |c |c|c|c|c}
 			support&confidence&\makecell{correlation\\coefficient}&average time&rules found&longest rule\\
@@ -172,10 +173,10 @@
 			\hline
 			0.2&0.2&0.5&203.3814s&1304&7\\
 		\end{tabular}
-		\caption{Settings used for testing on \textit{adult} dataset}
 	\end{table}
 	\begin{table}[H]
 		\centering
+		\caption{Results for \textit{adult} dataset for setting in a previous table}
 		\label{ar}
 		\begin{tabular}{r|c |c}
 			rule type& is present & rule example\\
@@ -189,7 +190,6 @@
 			\hline
 			$\neg x\rightarrow \neg y $& no &---------------\\ 
 		\end{tabular}
-		\caption{Results for \textit{adult} dataset for setting in a previous table}
 	\end{table}
 	
 	This result prove that both ,,normal'' rules  (x$\rightarrow$ y) are produced by algorithm as wall as those with one element negated. The negated rules are a bit tautological in their nature but are true nevertheless.
@@ -201,6 +201,7 @@
  	
  	\begin{table}[H]
  		\centering
+		 \caption{Settings used for testing on \textit{contraception} dataset}
  		\label{cs}
  		\begin{tabular}{c |c |c|c|c|c}
  			support&confidence&\makecell{correlation\\coefficient}&average time&rules found&longest rule\\
@@ -210,10 +211,10 @@
  			\hline
  			0.1&0.1&0.5&13.9701s&18&5\\
  		\end{tabular}
- 		\caption{Settings used for testing on \textit{contraception} dataset}
  	\end{table}
  	\begin{table}[H]
  		\centering
+		 \caption{Results for \textit{contraception} dataset for setting in a previous table}
  		\label{cr}
  		\begin{tabular}{r|c |c}
  			rule type& is present & rule example\\
@@ -227,7 +228,6 @@
  			\hline
  			$\neg x\rightarrow \neg y $& yes & \makecell{'$\neg$Husbands-education=very-high' $\rightarrow$\\ '$\neg$Standard-of-living-index=4', '$\neg$Wifes-education=very-high',\\ '$\neg$Number-of-children-ever-born=three-to-five',\\ '$\neg$Wifes-age=early20s'\\ (support: 575, confidence: 0.34608695652173915)}\\ 
  		\end{tabular}
- 		\caption{Results for \textit{contraception} dataset for setting in a previous table}
  	\end{table}
  	
  	In the first test (0.3 support and confidence) produces only 6 rules and all of them of first type (everything positive). Lowering minimal values produces additional negative rules. This proves that it is possible to achieve fourth type of rules ($\neg x\rightarrow \neg y$).
@@ -237,6 +237,7 @@
 	
 	\begin{table}[H]
 		\centering
+		\caption{Settings used for testing on \textit{mushrooms} dataset}
 		\label{ms}
 		\begin{tabular}{c |c |c|c|c|c}
 			support&confidence&\makecell{correlation\\coefficient}&average time&rules found&longest rule\\
@@ -246,10 +247,10 @@
 			\hline
 			0.5&0.5&0.5&18.3183s&504&6\\
 		\end{tabular}
-		\caption{Settings used for testing on \textit{mushrooms} dataset}
 	\end{table}
 	\begin{table}[H]
 		\centering
+		\caption{Results for \textit{mushrooms} dataset for setting in a previous table}
 		\label{mr}
 		\begin{tabular}{r|c |c}
 			rule type& is present & rule example\\
@@ -263,7 +264,6 @@
 			\hline
 			$\neg x\rightarrow \neg y $& no &--------------- \\ 
 		\end{tabular}
-		\caption{Results for \textit{mushrooms} dataset for setting in a previous table}
 	\end{table}
 	
 	Mushroom data set does not produce double negative rules ($\neg x\rightarrow \neg y $), this can be due to high support and confidence values, but again it takes too long time to test that theory.
@@ -273,6 +273,7 @@
 	
 	\begin{table}[H]
 		\centering
+		\caption{Settings used for testing on \textit{nursery} dataset}
 		\label{ns}
 		\begin{tabular}{c |c |c|c|c|c}
 			support&confidence&\makecell{correlation\\coefficient}&average time&rules found&longest rule\\
@@ -284,10 +285,10 @@
 			\hline
 			0.05&0.05&0.5&26.0353s&702&4\\
 		\end{tabular}
-		\caption{Settings used for testing on \textit{nursery} dataset}
 	\end{table}
 	\begin{table}[H]
 		\centering
+		\caption{Results for \textit{nursery} dataset for setting in a previous table}
 		\label{nr}
 		\begin{tabular}{r|c |c}
 			rule type& is present & rule example\\
@@ -301,7 +302,6 @@
 			\hline
 			$\neg x\rightarrow \neg y $& yes &\makecell{~health=not\_recom', '~=priority' $\rightarrow$\\ '~parents=usual'\\ (support: 4374, confidence: 0.7816643804298126)} \\ 
 		\end{tabular}
-		\caption{Results for \textit{nursery} dataset for setting in a previous table}
 	\end{table}
 	Setting 0.1 as minimal support and confidence yields double positive (x$\rightarrow$ y) and double negative ($\neg x\rightarrow \neg y $) rules. Lowering requirement does not change that.
 	
@@ -310,6 +310,7 @@
 	
 	\begin{table}[H]
 		\centering
+		\caption{Settings used for testing on \textit{supermarket} dataset}
 		\label{ss}
 		\begin{tabular}{c |c |c|c|c|c}
 			support&confidence&\makecell{correlation\\coefficient}&average time&rules found&longest rule\\
@@ -319,10 +320,10 @@
 			\hline
 			0.2&0.2&0.5&112.5376s&229&4\\
 		\end{tabular}
-		\caption{Settings used for testing on \textit{supermarket} dataset}
 	\end{table}
 	\begin{table}[H]
 		\centering
+		\caption{Results for \textit{supermarket} dataset for setting in a previous table}
 		\label{sr}
 		\begin{tabular}{r|c |c}
 			rule type& is present & rule example\\
@@ -336,7 +337,6 @@
 			\hline
 			$\neg x\rightarrow \neg y $& yes &\makecell{~health=not\_recom', '~=priority' $\rightarrow$\\ '~parents=usual'\\ (support: 4374, confidence: 0.7816643804298126)} \\ 
 		\end{tabular}
-		\caption{Results for \textit{supermarket} dataset for setting in a previous table}
 	\end{table}
 	Only two types of rules are yielded. Lowering requirement does not change that.
 	
@@ -345,6 +345,7 @@
 	
 	\begin{table}[H]
 		\centering
+		\caption{Settings used for testing on \textit{titanic} dataset}
 		\label{ts}
 		\begin{tabular}{c |c |c|c|c|c}
 			support&confidence&\makecell{correlation\\coefficient}&average time&rules found&longest rule\\
@@ -354,10 +355,10 @@
 			\hline
 			0.2&0.2&0.5&0.1512s&22&4\\
 		\end{tabular}
-		\caption{Settings used for testing on \textit{titanic} dataset}
 	\end{table}
 	\begin{table}[H]
 		\centering
+		\caption{Results for \textit{titanic} dataset for setting in a previous table}
 		\label{tr}
 		\begin{tabular}{r|c |c}
 			rule type& is present & rule example\\
@@ -371,7 +372,6 @@
 			\hline
 			$\neg x\rightarrow \neg y $& yes &\makecell{'~Sex=female' $\rightarrow$\\ '~Survived=1'\\ (support: 573, confidence: 0.8097731239092496)} \\ 
 		\end{tabular}
-		\caption{Results for \textit{titanic} dataset for setting in a previous table}
 	\end{table}
 	This experiment proves that in one dataset all types of rules can be present, given the right set.
 	
