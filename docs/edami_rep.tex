@@ -78,7 +78,7 @@
 			\begin{itemize}
 				\item it if is above a~given threshold check arisen rules confidence, again if it's above threshold assign it to positive rules set;
 				\item if it is above minimum correlation, but the support is too low, negate the antecedent and the consequent, again the new rule is checked for support and confidence, to establish whether it should be added to the set of negative rules;
-				\item if it is not, but the correlation is below negative minimal correlation two new rules are made: one with negated antecedent and one with negated consequent; both rules have their confidences check and if they are high enough, tehy are added to negative rules set.
+				\item if it is not, but the correlation is below negative minimal correlation two new rules are made: one with negated antecedent and one with negated consequent; both rules have their confidences check and if they are high enough, they are added to negative rules set.
 			\end{itemize}			
 		\end{itemize}
 		\item change $f_{k-1}$ to have $f_{k}$'s values;
@@ -134,7 +134,7 @@
 			\caption{Datasets description}
 		\end{longtable} 
 	\subsection{Time tests}
-	To check whether it si possible to conduct research using presented algorithm and to check its time consumption, for each dataset script was run ten times with support, confidence and correlation coefficient equal to 0.5. This numbers were chosen due to fact that some datasets take too long with smaller numbers, but this configuration at least provides some rules and iterates over all of datasets. For this experiment it is enough, in the next section all datasets will be tested with specialized settings. Results are shown below (datasets are shown form the smallest to the largest):
+	To check whether it is possible to conduct research using presented algorithm and to check its time consumption, for each dataset script was run ten times with support, confidence and correlation coefficient equal to 0.5. This numbers were chosen due to fact that some datasets take too long with smaller numbers, but this configuration at least provides some rules and iterates over all of datasets. For this experiment it is enough, in the next section all datasets will be tested with specialized settings. Results are shown below (datasets are shown form the smallest to the largest):
 	\begin{table}[H]
 		\centering
 		\begin{tabular}{r||c |c |c }

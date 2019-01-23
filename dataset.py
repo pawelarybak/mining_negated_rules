@@ -93,7 +93,7 @@ class ItemSet(object):
     def issubset(self, other):
         for item in self.items:
             for other_item in other.items:
-                if item.split("=")[0]==other_item.split("=")[0]:
+                if item.split("=")[0] == other_item.split("=")[0]:
                     return True
         return self.items.issubset(other.items)
 
